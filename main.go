@@ -3,13 +3,26 @@ package main
 import (
 	"log"
 	"net/http"
+	"ws/global"
 	"ws/server"
 )
 
 var (
 	addr   = ":2022"
-	banner = `websocket chat room , address is %s`
+	banner = `
+    ____              _____
+   |    |    |   /\     |
+   |    |____|  /  \    | 
+   |    |    | /----\   |
+   |____|    |/      \  |
+
+Go 语言编程之旅 —— 一起用 Go 做项目：ChatRoom，start on：%s
+`
 )
+
+func init() {
+	global.Init()
+}
 
 func main() {
 

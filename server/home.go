@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"ws/global"
 )
 
 func homeHandleFunc(w http.ResponseWriter, req *http.Request) {
-	tpl, err := template.ParseFiles(rootDir + "/template/home.html")
+	tpl, err := template.ParseFiles(global.RootDir + "/template/home.html")
 	if err != nil {
 		fmt.Println(w, "模版解析错误")
 		return

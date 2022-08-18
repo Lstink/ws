@@ -8,11 +8,12 @@ import (
 	"ws/logic"
 )
 
+// WebSocketHandleFunc 服务处理
 func WebSocketHandleFunc(w http.ResponseWriter, req *http.Request) {
 	// Accept 从客户端接收 Websocket 握手，并将连接升级到 Websocket。
 	// 如果 Origin 域与主机不同，Accept 将拒绝握手，除非设置了 InsecureSkipVerify 选项 （AcceptOptions来设置）
 
-	conn, err := websocket.Accept(w, req, nil)
+	conn, err := websocket.Accept(w, req, &websocket.AcceptOptions{InsecureSkipVerify: true})
 	if err != nil {
 		log.Println("websocket accept error:", err)
 		return
@@ -40,21 +41,21 @@ func WebSocketHandleFunc(w http.ResponseWriter, req *http.Request) {
 	go user.SendMessage(req.Context())
 
 	// 3.给新用户发送欢迎消息
-	user.MessageChannel <- logic.NewWelcomeMessage("nickname")
+	user.MessageChannel <- logic.NewWelcomeMessage(user)
 
 	// 向所有用户告知新用户的到来
-	msg := logic.NewNoticeMessage(nickname + "进入了房间")
+	msg := logic.NewEnterMessage(user)
 	logic.Broadcaster.BroadCaster(msg)
 	log.Println(msg)
 
 	// 4.将用户加入广播器列表中
 	logic.Broadcaster.UserEntering(user)
-	// 5.接收用户信息
+	// 5.接收用户发送过来的信息
 	err = user.ReceiveMessage(req.Context())
 	// 6.用户离开
 	logic.Broadcaster.UserLeaving(user)
 	// 向所有用户告知用户离开
-	msg = logic.NewNoticeMessage(nickname + "离开了房间")
+	msg = logic.NewLeaveMessage(user)
 	logic.Broadcaster.BroadCaster(msg)
 	log.Println(msg)
 

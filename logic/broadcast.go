@@ -1,5 +1,7 @@
 package logic
 
+import "ws/global"
+
 // broadcaster 广播器
 type broadcaster struct {
 	// 所有聊天室用户
@@ -75,7 +77,7 @@ var Broadcaster = &broadcaster{
 
 	enteringChannel: make(chan *User),
 	leavingChannel:  make(chan *User),
-	messageChannel:  make(chan *Message, MessageQueueLen),
+	messageChannel:  make(chan *Message, global.MessageQueueLen),
 
 	checkUserChannel:      make(chan string),
 	checkUserCanInChannel: make(chan bool),
