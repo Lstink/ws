@@ -12,4 +12,5 @@ func RegisterHandle() {
 
 	http.HandleFunc("/", homeHandleFunc)
 	http.HandleFunc("/ws", WebSocketHandleFunc)
+	http.HandleFunc("/user_list", userListHandleFunc)
 }

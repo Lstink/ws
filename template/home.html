@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>聊天室 —— Go语言编程之旅</title>
@@ -137,10 +137,12 @@
 
                     gWS.onopen = function () {
                         // WebSocket 已连接上的回调
+                        console.log("连接上websocket")
                     };
 
                     gWS.onmessage = function (evt) {
                         let data = JSON.parse(evt.data);
+                        console.log("收到回复：" , evt)
                         if (data.type == 4) {
                             that.usertip = data.content;
                             that.joined = false;
@@ -180,7 +182,8 @@
                         console.log(evt);
                     };
 
-                    gWS.onclose = function () {
+                    gWS.onclose = function (evt) {
+                        console.log(evt)
                         console.log("连接已关闭")
                     };
 
@@ -191,7 +194,7 @@
             leavechat: function() {
                 gWS.close();
 
-                that.msglist.splice(0);
+                this.msglist.splice(0);
 
                 this.addMsg2List({
                     user: {nickname: ""},
@@ -205,6 +208,8 @@
             },
             sendChatContent: function() {
                 let msg = JSON.stringify({"content": this.content});
+                console.log("发送消息：", msg)
+
                 gWS.send(msg);
 
                 let data = {

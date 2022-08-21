@@ -15,13 +15,12 @@ const (
 
 type Message struct {
 	// 哪个用户发送的消息
-	User           *User            `json:"user"`
-	Type           int              `json:"type"`
-	Content        string           `json:"content"`
-	MsgTime        time.Time        `json:"msg_time"`
-	Users          map[string]*User `json:"users"`
-	ClientSendTime time.Time        `json:"client_send_time"`
-	Ats            []string         `json:"ats"`
+	User           *User     `json:"user"`
+	Type           int       `json:"type"`
+	Content        string    `json:"content"`
+	MsgTime        time.Time `json:"msg_time"`
+	ClientSendTime time.Time `json:"client_send_time"`
+	Ats            []string  `json:"ats"`
 }
 
 func NewMessage(user *User, content, clientTime string) *Message {
@@ -50,7 +49,7 @@ func NewErrorMessage(content string) *Message {
 
 func NewWelcomeMessage(user *User) *Message {
 	return &Message{
-		User:    System,
+		User:    user,
 		Type:    MsgTypeWelcome,
 		Content: user.NickName + " 您好，欢迎加入聊天室",
 		MsgTime: time.Now(),
@@ -59,7 +58,7 @@ func NewWelcomeMessage(user *User) *Message {
 
 func NewEnterMessage(user *User) *Message {
 	return &Message{
-		User:    System,
+		User:    user,
 		Type:    MsgTypeUserEnter,
 		Content: user.NickName + " 进入了房间",
 		MsgTime: time.Now(),
@@ -68,7 +67,7 @@ func NewEnterMessage(user *User) *Message {
 
 func NewLeaveMessage(user *User) *Message {
 	return &Message{
-		User:    System,
+		User:    user,
 		Type:    MsgTypeUserLeave,
 		Content: user.NickName + " 离开了房间",
 		MsgTime: time.Now(),

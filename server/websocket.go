@@ -21,22 +21,27 @@ func WebSocketHandleFunc(w http.ResponseWriter, req *http.Request) {
 
 	// 1.新用户进来，构建该用户的实例
 	nickname := req.FormValue("nickname")
+	token := req.FormValue("token")
 	if l := len(nickname); l < 2 || l > 20 {
 		log.Println("nickname illegal:", nickname)
-		wsjson.Write(req.Context(), conn, logic.NewErrorMessage("非法昵称"))
+		log.Printf("%T", logic.NewErrorMessage("昵称已经存在"))
+		err = wsjson.Write(req.Context(), conn, logic.NewErrorMessage("非法昵称"))
+		if err != nil {
+			log.Println(err)
+		}
 		conn.Close(websocket.StatusUnsupportedData, "nickname illegal！")
 		return
 	}
 
 	if !logic.Broadcaster.CanEnterRoom(nickname) {
-		log.Println("昵称已经存在", nickname)
+
 		wsjson.Write(req.Context(), conn, logic.NewErrorMessage("昵称已经存在"))
 		conn.Close(websocket.StatusUnsupportedData, "nickname exists！")
 		return
 	}
 
-	user := logic.NewUser(conn, nickname, req.RemoteAddr)
-
+	user := logic.NewUser(conn, token, nickname, req.RemoteAddr)
+	log.Println("初始化用户：", user)
 	// 2.开启给用户发送消息的goroutine
 	go user.SendMessage(req.Context())
 
@@ -50,8 +55,11 @@ func WebSocketHandleFunc(w http.ResponseWriter, req *http.Request) {
 
 	// 4.将用户加入广播器列表中
 	logic.Broadcaster.UserEntering(user)
+	log.Println("user:", nickname, "joins chat")
+
 	// 5.接收用户发送过来的信息
 	err = user.ReceiveMessage(req.Context())
+
 	// 6.用户离开
 	logic.Broadcaster.UserLeaving(user)
 	// 向所有用户告知用户离开
